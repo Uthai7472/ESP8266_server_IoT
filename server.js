@@ -24,8 +24,8 @@ io.on('connection', (socket) => {
     io.emit('randomValue', data.value);
   });
 
-  socket.on('disconnect', () => {
-    console.log('Local server disconnected via Socket.IO');
+  socket.on('disconnect', (reason) => {
+    console.log('Local server disconnected via Socket.IO:', reason);
   });
 });
 
