@@ -8,13 +8,20 @@ const port = 3000;
 app.use(bodyParser.json());
 app.use(cors());
 
+let espData = {};
+
 app.post('/api/esp/data', (req, res) => {
     const { temp, humd, pos } = req.body;
+    espData = {temp, humd, pos};
     console.log(`Received data - Temp: ${temp}, Humidity: ${humd}, Position: ${pos}`);
 
     // Do something with the received values
     res.status(200).send({ message: 'Data received successfully' });
 });
+
+app.get('/api/esp/data', (req, res) => {
+    res.json(espData);
+})
 
 app.get('/', (req, res) => {
     res.send("Hello");
