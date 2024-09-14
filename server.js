@@ -1,54 +1,25 @@
 const express = require('express');
-const http = require('http');
-const socketIO = require('socket.io');
 const bodyParser = require('body-parser');
-
-// Express server setup
+const cors = require('cors');
 const app = express();
-const server = http.createServer(app);
-const io = socketIO(server);
+const port = 3000;
+
+// Middleware to parse incoming JSON data
 app.use(bodyParser.json());
-const port = 3000; // Public server port
+app.use(cors());
 
-let lastRandomValue = null;
+app.post('/api/esp/data', (req, res) => {
+    const { temp, humd, pos } = req.body;
+    console.log(`Received data - Temp: ${temp}, Humidity: ${humd}, Position: ${pos}`);
 
-// Listen for Socket.IO connections from local servers
-io.on('connection', (socket) => {
-  console.log('Local server connected via Socket.IO');
-
-  // Listen for randomData events from the local server
-  socket.on('randomData', (data) => {
-    console.log('Received random value via Socket.IO:', data.value);
-    lastRandomValue = data.value;
-    // Optionally broadcast to all connected clients
-    io.emit('randomValue', data.value);
-  });
-
-  socket.on('disconnect', (reason) => {
-    console.log('Local server disconnected via Socket.IO:', reason);
-  });
+    // Do something with the received values
+    res.status(200).send({ message: 'Data received successfully' });
 });
 
 app.get('/', (req, res) => {
-    res.send(`Value from Raspberry PI: ${lastRandomValue}`);
+    res.send("Hello");
 })
 
-// Example GET route
-// app.get('/api/data', (req, res) => {
-//   res.json({ message: 'Public server is running', status: 'active' });
-// });
-
-// // Example POST route
-// app.post('/api/receive', (req, res) => {
-//   const { value } = req.body;
-//   console.log('Received POST data:', value);
-
-//   // Broadcast the received data via Socket.IO
-//   io.emit('newData', value);
-//   res.json({ message: 'Data broadcasted to clients', value });
-// });
-
-// Start the public Express server
-server.listen(port, () => {
-  console.log(`Public server is running on http://localhost:${port}`);
+app.listen(port, () => {
+    console.log(`Server running on http://localhost:${port}`);
 });
